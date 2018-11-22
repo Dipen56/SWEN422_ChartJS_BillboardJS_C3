@@ -1,0 +1,51 @@
+<html>
+<head>
+  <% include ../partials/header.ejs %>
+</head>
+<body>
+  <% include nav.ejs %>
+
+  <div id="container">
+    <h1><%= title %></h1>
+    <div id="lineChart"></div>
+  </div>
+
+    <script>
+    var dataRaw = <%-JSON.stringify(data)%>;
+    var dataParsed = ["GDP"];
+    var xLabels = ["x"]
+    var data = [];
+    for (var key in dataRaw) {
+      if (dataRaw.hasOwnProperty(key)) {
+         dataParsed.push(dataRaw[key]);
+          xLabels.push(key);
+      }
+    }
+    data.push(dataParsed);
+    data.push(xLabels);
+    chart = bb.generate({
+    type: "line",
+    bindto: "#lineChart",
+    data: {
+      x: "x",
+      columns: data
+    },
+    axis: {
+      x:{
+        label: {
+          text: "Year",
+          position: "outer-center"
+        }
+      },
+      y:{
+          label: {
+              text: "GDP",
+
+          }
+      }
+    }
+  });
+    </script>
+</div>
+</body>
+</html>

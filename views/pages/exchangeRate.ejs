@@ -1,0 +1,129 @@
+<html>
+<head>
+    <% include ../partials/header.ejs %>
+</head>
+<body>
+
+<% include nav.ejs %>
+
+<div id="container">
+    <h1>Real Exchange Rate Comparision World</h1>
+    <div id="lineChart"></div>
+    <div class="dropdown">
+        <button type="button" id="selectedCountry" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+            Select Country
+        </button>
+        <div class="dropdown-menu">
+            <% for(var i=0; i<JSON.stringify(countryNames).length; i++) {%>
+            <%if (countryNames[i] != undefined){%>
+            <% if(i == 11 || i == 178 ){%>
+            <label id=<%=i%> class="dropdown-item"><input type="checkbox" value=<%=i%> checked><%=countryNames[i]%></label>
+            <%}else{%>
+            <label id=<%=i%> class="dropdown-item"><input type="checkbox" value=<%=i%>><%=countryNames[i]%></label>
+            <%}%>
+            <%}%>
+            <%}%>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Script
+    var data = <%-JSON.stringify(data)%>;
+    var years = <%-JSON.stringify(years)%>;
+    var countryNames = <%-JSON.stringify(countryNames)%>;
+    data.push(years)
+    var selectedCountry =[];
+    var filteredData = [];
+    var firstTime = true;
+    $(document).ready(function(){
+        selectedCountry.push(11);
+        selectedCountry.push(178);
+        filteredData.push(data[11]);
+        filteredData.push(data[178]);
+        filteredData.push(data[data.length-1]);
+        relaodChart(filteredData);
+
+        for(var i in countryNames) {
+            $(document).on('change', '#'+i, function () {
+                $('input[type="checkbox"]').click(function(){
+                    if($(this).prop("checked") == true){
+                        if(selectedCountry.includes(parseInt($(this).val())) == false){
+                            selectedCountry.push(parseInt($(this).val()));
+                            filteredData = [];
+                            for(var i in selectedCountry){
+                                filteredData.push(data[selectedCountry[i]]);
+                            }
+                            filteredData.push(data[data.length-1]);
+                            relaodChart(filteredData);
+                        }
+                    }
+                    else if($(this).prop("checked") == false){
+                        if(selectedCountry.includes(parseInt($(this).val())) == true){
+                            selectedCountry.splice(selectedCountry.indexOf(parseInt($(this).val()), 1));
+                            filteredData = [];
+                            for(var i in selectedCountry){
+                                filteredData.push(data[selectedCountry[i]]);
+                            }
+                            filteredData.push(data[data.length-1]);
+                            relaodChart(filteredData);
+                        }
+                    }
+                });
+            })
+            if(firstTime){
+                firstTime =false;
+                $('input[type="checkbox"]').click(function(){
+                    if($(this).prop("checked") == true){
+                        if(selectedCountry.includes(parseInt($(this).val())) == false){
+                            selectedCountry.push(parseInt($(this).val()));
+                            filteredData = [];
+                            for(var i in selectedCountry){
+                                filteredData.push(data[selectedCountry[i]]);
+                            }
+                            filteredData.push(data[data.length-1]);
+                            relaodChart(filteredData);
+                        }
+                    }
+                    else if($(this).prop("checked") == false){
+                        if(selectedCountry.includes(parseInt($(this).val())) == true){
+                            selectedCountry.splice(selectedCountry.indexOf(parseInt($(this).val()), 1));
+                            filteredData = [];
+                            for(var i in selectedCountry){
+                                filteredData.push(data[selectedCountry[i]]);
+                            }
+                            filteredData.push(data[data.length-1]);
+                            relaodChart(filteredData);
+                        }
+                    }
+                });
+
+            }
+        }
+        function relaodChart(filteredDate) {
+            var  chart = bb.generate({
+                data: {
+                    x: "x",
+                    columns: filteredDate
+                },
+                axis: {
+                    x: {
+                        tick: {
+                            label: {
+                                text: "Year",
+                                position: "outer-center"
+                            }
+                        },
+                        label: "Year",
+                    },
+                    y: {
+                        label: "Official exchange rate (LCU per US$, period average)",
+                    },
+                },
+                bindto: "#lineChart"
+            });
+        }
+    });
+</script>
+</body>
+</html>

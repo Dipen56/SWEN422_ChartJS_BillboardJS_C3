@@ -1,0 +1,132 @@
+<html>
+<head>
+    <% include ../partials/header.ejs %>
+</head>
+<body>
+<% include nav.ejs %>
+<h1 id="title"></h1>
+<div id="BarChart"></div>
+
+<div id="error" class="alert alert-info"><label><strong>Please note:</strong> Starting year cannot be greater than or
+        equal to ending year.</label></div>
+<div id="selectYears">
+    <div>
+        <label>Select Start Year </label>
+        <div>
+            <select id="startingYear">
+                <% for(var i=0; i<JSON.stringify(years).length; i++) {%>
+                    <%console.log(years[i])%>
+                    <%if (years[i] != undefined){%>
+                        <option id=<%=i%> <% if(years[i] == 2016) {%>selected="selected"<%}%> value=<%=years[i]%>><%=years[i]%></option>
+                    <%}%>
+                <%}%>
+            </select>
+        </div>
+    </div>
+
+    <div>
+        <label>Select End Year</label>
+        <div>
+            <select id="endingYear">
+                <% for(var i=0; i<JSON.stringify(years).length; i++) {%>
+                    <%if (years[i] != undefined){%>
+                        <option id=<%=i%> <% if(years[i] == 2017) {%>selected="selected"<%}%> value=<%=years[i]%>><%=years[i]%></option>
+                    <%}%>
+                <%}%>
+            </select>
+        </div>
+    </div>
+    <div>
+        <button id="enter" type="button" class="btn btn-primary" style="padding: 1px 6px">Enter</button>
+    </div>
+</div>
+
+<script>
+    var yearTwoReq = 2017;
+    var yearOneReq = 2016;
+    $(document).ready(function(){
+        $( ".selectedYears" ).append( "<label>"+yearOneReq +" "+yearTwoReq+ "</label>" );
+     $('#startingYear').on('change', function () {
+         yearOneReq = $(this).val();
+     });
+        $('#endingYear').on('change', function () {
+            yearTwoReq = $(this).val();
+
+        });
+        $('#enter').on('click', function () {
+            if(parseInt(yearTwoReq) > parseInt(yearOneReq)) {
+                $( "#error").hide();
+                calculateDate(yearOneReq, yearTwoReq);
+            }else{
+                $( "#error").show();
+            }
+        })
+    });
+    calculateDate(yearOneReq,yearTwoReq);
+
+function calculateDate(yearone, yeartwo) {
+    var yearTwoReq = yeartwo;
+    var yearOneReq = yearone;
+    var perCapitaData = <%-JSON.stringify(data)%>;
+    $( "#title" ).text("Country Ranking based on GDP change (" + yearOneReq +" - "+yearTwoReq + ")");
+    let changesInGDP = [];
+    for(let i in perCapitaData[yearOneReq]) {
+        let yearOne = perCapitaData[yearOneReq][i].gdp;
+        let yearTwo = perCapitaData[yearTwoReq][i].gdp;
+        if (!isNaN(yearOne) &&  !isNaN(yearTwo)) {
+            // console.log(yearOne)
+            let countryName = perCapitaData[yearOneReq][i].name;
+            let defGDP = yearTwo - yearOne;
+            changesInGDP.push({country: countryName, GDPChange: defGDP});
+        }
+    }
+    changesInGDP.sort(function (a,b) {
+        return b.GDPChange - a.GDPChange;
+    });
+
+    let combinedData = [];
+    changesInGDP= changesInGDP.slice(0,10);
+    // for(let i in changesInGDP) {
+    //     yaxis.push(i);
+    // }
+    // combinedData.push(yaxis);
+    for(let i in changesInGDP){
+        //yaxis.push(changesInGDP[i].country);
+        let changeInGDPData = [];
+        changeInGDPData.push(changesInGDP[i].country);
+        changeInGDPData.push(changesInGDP[i].GDPChange);
+        combinedData.push(changeInGDPData);
+    }
+
+
+    var data = combinedData;
+    updateChart(data);
+}
+
+function updateChart(data) {
+    var chart = bb.generate({
+        data: {
+            columns: data,
+            type: "bar"
+        },
+        axis: {
+            x: {
+                type: "category",
+                categories: [""],
+            },
+            rotated: true
+        },
+        bar: {
+            width: {
+                ratio: 0.5
+            }
+        },
+        bindto: "#BarChart"
+
+    });
+
+}
+</script>
+</body>
+</html>
+

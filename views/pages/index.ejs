@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <% include ../partials/header.ejs %>
+</head>
+
+<body>
+
+  <% include nav.ejs %>
+    <div class="container">
+      <h1>
+        <%= title %>
+      </h1>
+    </div>
+    <div id="container"></div>
+    <script type="application/javascript">
+      var actualData = <%-JSON.stringify(actualData)%>;
+    </script>
+    <div>
+      <div>
+        <ul class="legend">
+          <li>
+            <span class="gdpTeirOne"></span>$0 - $500</li>
+          <li>
+            <span class="gdpTeirTwo"></span>$501 - $1,000</li>
+          <li>
+            <span class="gdpTeirThree"></span>$1,001 - $5,000</li>
+          <li>
+            <span class="gdpTeirFour"></span>$5,001 - $20,000</li>
+          <li>
+            <span class="gdpTeirFive"></span>$20,000+</li>
+          <li>
+            <span class="gdpInvalid"></span>Invalid</li>
+        </ul>
+      </div>
+      <div id="slider" style="display: inline-block;">
+        <button class="btn" id="play-btn" onclick="pause()">
+          <i class="fa fa-pause" id="play-btn-icon"></i>
+        </button>
+        <div class="range">
+          <input autocomplete="off" id="slider-input" type="range" min="1" max="<%-count%>" steps="1" value="<%-count%>" />
+        </div>
+        <div id="yearDisplay">
+          <h6>2017</h6>
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="container">
+      <div id="topButton" style="text-align:center; width:  100%;"></div>
+      <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+          <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile"
+            aria-selected="true">GDP growth</a>
+        </div>
+      </nav>
+      <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+          <h1 id="graphTitle"></h1>
+          <div id="lineChart"></div>
+          <div>
+      </div>
+
+          <script>
+            var data = <%-JSON.stringify(actualData)%>;
+            var actualData = data.gdpPerCapitaData;
+            var exchangeRate = data.exchangeRateData;
+            var addedLink = false;
+            var chart = null;
+          </script>
+          <script src="/javascripts/worldmap.js"></script>
+          <script src="/javascripts/slider.js"></script>
+</body>
+
+</html>
